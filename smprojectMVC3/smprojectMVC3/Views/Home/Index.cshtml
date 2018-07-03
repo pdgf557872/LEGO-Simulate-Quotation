@@ -1,0 +1,1765 @@
+﻿@{
+    Layout = null;
+}
+@model smprojectMVC3.Models.LibaryandSaveViewModel
+@using System.Linq
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>three.js webgl - transform controls</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            margin: 0px;
+            background-color: #000000;
+            color: #fff;
+            font-family: Monospace;
+            text-align: center;
+            font-size: 16px;
+            line-height: 30px;
+            overflow: hidden;
+            resize: none;
+        }
+
+        #info {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            padding: 15px;
+            z-index: 100;
+        }
+
+        .navbar {
+            min-height: 50px !important;
+            margin-top: -25px;
+            bottom: -25px;
+            line-height: 150px;
+            text-align: center;
+            height: 10px;
+            font-size: 20px;
+        }
+
+        .navbar-brand {
+            text-align: center;
+            padding: 10px 15px;
+            height: 30px;
+            line-height: 80px;
+            font-size: 22px;
+        }
+
+        .navbar-toggle {
+            /* (80px - button height 34px) / 2 = 23px */
+            margin-top: 23px;
+            padding: 9px 10px !important;
+        }
+
+        @@media (min-width: 768px) {
+            .navbar-nav > li > a {
+                /* (80px - line-height of 27px) / 2 = 26.5px */
+                padding-top: 26.5px;
+                padding-bottom: 26.5px;
+                line-height: 27px;
+            }
+        }
+
+        .navbar-nav li:hover > ul.dropdown-menu {
+            display: block;
+            font-size: 18px;
+        }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu > .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -6px;
+            }
+
+        .modal-header {
+            background-color: rgb(144,238,144);
+            margin-top: -2px;
+            margin-left: -0.5px;
+            width: 399px;
+        }
+
+        .modal {
+            pointer-events: auto;
+        }
+
+        .vertical-alignment-helper {
+            display: table;
+            height: 100%;
+            width: 100%;
+        }
+
+        .vertical-align-center {
+            /* To center vertically */
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .modal-content {
+            /* Bootstrap sets the size of the modal in the modal-dialog class, we need to inherit it */
+            width: inherit;
+            height: inherit;
+            /* To center horizontally */
+            margin: 0 auto;
+        }
+
+        .modal-content {
+            width: 400px;
+        }
+
+        .row {
+            margin-top: 40px;
+            padding: 0 10px;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        .panel-heading div {
+            margin-top: 0px;
+            font-size: 15px;
+        }
+
+            .panel-heading div span {
+                margin-left: 5px;
+            }
+
+        .panel-body {
+            display: none;
+        }
+
+        .tablehead {
+            position: relative;
+            left: 170px;
+        }
+
+        .ui-helper-center {
+            text-align: center;
+        }
+
+        .panel-footer {
+            position: relative;
+            width: 120px;
+            top: -21px;
+            right: 1px;
+        }
+
+        .sliderback {
+            position: relative;
+            width: 400px;
+            height: 40px;
+            margin-left: 15px;
+            top: 7px;
+        }
+
+        #ex1Slider .slider-selection {
+            background: #BABABA;
+        }
+
+        .costlabel {
+            position: relative;
+            text-align: center;
+            top: -34px;
+            right: -125px;
+        }
+
+        .pricelabel {
+            position: relative;
+            text-align: right;
+            top: -34px;
+            right: -300px;
+            line-height: 20px;
+        }
+
+        .pb-modalreglog-container {
+            margin-top: 100px;
+        }
+
+        .pb-modalreglog-legend {
+            text-align: center;
+        }
+
+        .pb-modalreglog-input-group {
+            margin: auto;
+        }
+
+        .pb-modalreglog-submit {
+            margin-left: 5px;
+        }
+
+        .pb-modalreglog-form-reg {
+            text-align: center;
+        }
+
+        .pb-modalreglog-footer p {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #pb-modalreglog-progressbar {
+            border-radius: 2px;
+        }
+
+        .greenOK {
+            float: right;
+            margin-top: 8px;
+            color: green;
+        }
+
+        .redRemove {
+            float: right;
+            margin-top: 8px;
+            color: red;
+        }
+
+        .dice-menu {
+            padding: 0;
+            display: block;
+            position: fixed;
+            top: 10%;
+            right: 0;
+        }
+
+            .dice-menu li {
+                display: block;
+                border-width: 0;
+                border-radius: 5px;
+                padding: 15px;
+                overflow: hidden;
+                background-color: #444;
+                color: #eee;
+                opacity: 0;
+                cursor: pointer;
+            }
+
+                .dice-menu li:first-child {
+                    opacity: .8;
+                }
+
+        .Library {
+            margin-left: 5px;
+            margin-right: 12px;
+            margin-bottom: 12px;
+        }
+
+        .modal-dialogL {
+            overflow-y: initial !important;
+        }
+
+        .modal-bodyL {
+            height: 500px;
+            overflow-y: auto;
+        }
+
+        .LibraryInfoLabel {
+            font-size: 20px;
+            margin-top: -10px;
+            text-align: left;
+        }
+
+        .LibraryInfoText {
+            font-size: 18px;
+            margin-top: -10px;
+            text-align: center;
+        }
+
+        hr.style-four {
+            height: 12px;
+            border: 0;
+            box-shadow: inset 0 12px 12px -12px rgba(0,0,0,0.5);
+        }
+
+        .Library:hover {
+            transform: scale(1.1);
+        }
+
+        #myBar {
+            width: 10%;
+            height: 30px;
+            background-color: #4CAF50;
+            text-align: center; /* To center it horizontally (if you want) */
+            line-height: 30px; /* To center it vertically */
+            color: white;
+        }
+
+        a:focus, a:active {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    </style>
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/three.min.js"></script>
+    <script src="~/Scripts/TransformControls.js"></script>
+    <script src="~/Scripts/TrackballControls.js"></script>
+    <script src="~/Scripts/threex.domevents.js"></script>
+    <script src="~/Scripts/OBJLoader.js"></script>
+    <script src="~/Scripts/GLTFExporter.js"></script>
+    <script src="~/Scripts/jquery.smartmenus.js"></script>
+    <script src="~/Scripts/jspdf.debug.js"></script>
+    <script src="~/Scripts/jspdf.plugin.autotable.js"></script>
+    @*<script src="~/Scripts/lz-string.js"></script>
+        <script src="~/Scripts/lzma.js"></script>
+        <script src="~/Scripts/lzma_worker.js"></script>
+        <script src="~/Scripts/loading-bar.js"></script>*@
+
+    @*<script src="~/Scripts/jquery-ui.min.js"></script>*@
+
+    <script type="text/javascript" src="~/Scripts/bootstrap-slider.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-colorpicker.min.js"></script>
+    <link rel="stylesheet" href="~/Content/loading-bar.css">
+
+    <link rel="stylesheet" href="~/Content/colorpicker.css">
+    <link rel="stylesheet" href="~/Content/chosen.css">
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Content/bootstrap-slider.min.css">
+</head>
+<body>
+    <!-- NavBar -->
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid ">
+
+            <div class="navbar-header">
+                <a class="navbar-brand" style="font-size:22px" href="#">MyLEGO</a>
+
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <!-- FileDropdown -->
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">File<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" id="new" data-toggle="modal" data-target="#newModal">New</a></li>
+                            <li><a href="#" id="save" data-toggle="modal" data-target="#saveModal">Save</a></li>
+                            <li><a href="#" id="Library" data-toggle="modal" data-target="#LoadModal">Load</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- AddDropdown -->
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="addDropdown">Add<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <!-- Bricks -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Bricks</a>
+                                <ul class="dropdown-menu" id="bricks">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Bricks"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Bricks-Slope -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Bricks-Slope</a>
+                                <ul class="dropdown-menu" id="Bricks-Bows">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Bricks-Slope"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Bricks-Bows -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Bricks-Bows</a>
+                                <ul class="dropdown-menu" id="Bricks-Bows">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Bricks-Bows"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Plate -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Plate</a>
+                                <ul class="dropdown-menu" id="Bricks-Bows">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Plate"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Tile -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Tile</a>
+                                <ul class="dropdown-menu" id="Bricks-Bows">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Tile"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- window -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">window</a>
+                                <ul class="dropdown-menu" id="Bricks-Bows">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Window"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Doors -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Doors</a>
+                                <ul class="dropdown-menu" id="Bricks-Bows">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Doors"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Beams -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Beams</a>
+                                <ul class="dropdown-menu" id="Beams">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Beams"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Connectors -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Connectors</a>
+                                <ul class="dropdown-menu" id="Connectors">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Connectors"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <!-- Container -->
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#">Container</a>
+                                <ul class="dropdown-menu" id="Connectors">
+
+                                    @foreach (var o in Model.LegoLibrary.OrderBy(i => i.Name).Where(i => i.Type == "Container"))
+                                    {
+                                        <li><a href="#" class="addItem" id="@o.LegoID">@o.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Quotation -->
+                    <li><a href="#" id="quotation" data-toggle="modal" data-target="#quotationModal">Quotation</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    @if (Session["userId"].ToString() == "Guest")
+                    {
+                        <li><a href="#" data-toggle="modal" data-target="#SignUpModal"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#LoginModal"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a href="#">
+                                <span class="glyphicon glyphicon-user"></span>
+                                @if (Session["userID"].ToString().Substring(0, Session["userID"].ToString().IndexOf('@')).Length < 0)
+                                {
+                                    Response.Redirect(@Url.Action("Index", "Home"));
+                                }
+                                else
+                                {
+                                    @Session["userID"].ToString().Substring(0, @Session["userID"].ToString().IndexOf('@'))
+                                }
+                            </a>
+                        </li>
+                        <li><a href="@Url.Action("Index", "Home")" id="btnLogOut"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- dice-menu -->
+    <ul class="dice-menu" default-open="false">
+        <li style="font-size:16px">
+            LEGO Color:
+            <input id="color_value" class="jscolor" value="ac7339" style="text-align:center;font-size:16px; width:100px" spellcheck="false">
+        </li>
+    </ul>
+    <ul class="dice-menu" default-open="false" style="margin-top:60px; z-index:auto">
+        <li style="font-size:16px">
+            Position:
+            <input id="dicePositionX" type="text" style="text-align:center;font-size:15px; width:60px; color:black" value="0" />
+            <input id="dicePositionY" type="text" style="text-align:center;font-size:15px; width:60px; color:black" value="0" />
+            <input id="dicePositionZ" type="text" style="text-align:center;font-size:15px; width:60px; color:black" value="0" />
+        </li>
+    </ul>
+    <!-- FileModal -->
+    <div id="newModal" class="modal fade " style="display:none;" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">New Project</h4>
+                </div>
+                <div class="modal-body">
+
+                    <!-- Text input-->
+                    <form id="newnameInput_form" method="post" action="" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label" for="textinput">Project Name</label>
+                            <div class="col-md-12">
+                                <input type="text" id="newnameInput" name="newnameInput" placeholder="" class="form-control input-md" required="">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer ">
+                    <button type="button" id="modalNewBtn" class="btn btn-default" data-dismiss="modal">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="saveModal" class="modal fade " style="display:none;" role="dialog">
+        <div class="modal-dialog modal-sm">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Save Project</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <fieldset>
+                            <!-- Text input-->
+                            <div class="form-group">
+                                <label class="control-label" for="textinput">Project Name</label>
+                                <div class="col-md-12">
+                                    <input id="nameInput" name="nameInput" type="text" placeholder="" class="form-control input-md" required="">
+                                </div>
+                            </div>
+
+                            <!-- Textarea -->
+                            <div class="form-group">
+                                <label class="control-label" for="descriptionInput">Description</label>
+                                <div class="col-md-12">
+                                    <textarea class="form-control" id="descriptionInput" name="descriptionInput" style="height:100px">Default</textarea>
+                                </div>
+                            </div>
+
+                            <div id="screenShot">
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalSaveBtn" class="btn btn-default" data-dismiss="modal">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="LoadModal" class="modal fade " style="display:none; margin-right:400px; z-index:9999" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialogL">
+
+            <!-- Modal content-->
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Load Project</h4>
+                </div>
+
+                <div id="load2" class="container-fluid modal-body modal-bodyL" style="display:inline-block;">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalLibraryBtn" class="btn btn-default" data-dismiss="modal">Load</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="LoadInfoModal" class="modal" style="display:none; margin-left:395px;" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:cornflowerblue;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Information</h4>
+                </div>
+
+                <div class="modal-body container-fluid">
+
+                    <div class="col-xs-6 LibraryInfoLabel" style="margin-top: 5px;">ProjectName</div>
+                    <div class="col-xs-offset-0 LibraryInfoText" id="ProjectNameLib" style="margin-top: 5px;">123</div>
+                    <hr class="style-four " style="margin-top: 20px; margin-bottom: -8px;">
+
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-xs-6 LibraryInfoLabel">Creator</div>
+                        <div class="col-xs-offset-0 LibraryInfoText" id="MemberNameLib">123</div>
+                        <hr class="style-four " style="margin-top: 20px; margin-bottom: -8px;">
+                    </div>
+
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-xs-6 LibraryInfoLabel">pcs/pzs</div>
+                        <div class="col-xs-offset-0 LibraryInfoText" id="pcspzsLib">123</div>
+                        <hr class="style-four " style="margin-top: 20px; margin-bottom: -8px;">
+                    </div>
+
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-xs-6 LibraryInfoLabel">Description</div>
+                        <div class="col-xs-offset-0 LibraryInfoText" id="DescriptionLib">123</div>
+                        <hr class="style-four " style="margin-top: 20px; margin-bottom: -8px;">
+                    </div>
+
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-xs-6 LibraryInfoLabel">SaveTime</div>
+                        <div class="col-xs-offset-0 LibraryInfoText" id="SaveTimeLib">123</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- quotationModal -->
+    <div id="quotationModal" class="modal fade " style="display:none; " role="dialog">
+        <div class="container modal-dialog" style="width:900px">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <select id="selectquotation" name="selectquotation" class="form-control" data-placeholder="Choose a project"></select>
+                        </div>
+                        <div class="panel-body">
+                            <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+                        </div>
+
+                        <table class="table table-hover" id="myTable">
+                            <thead class="tablehead">
+                                <tr style="font-size:18px">
+                                    <th style="text-align:center">ProjectName</th>
+                                    <th style="text-align:center">LegoID</th>
+                                    <th style="text-align:center">Name</th>
+                                    <th style="text-align:center">Weight</th>
+                                    <th style="text-align:center">Type</th>
+                                    <th style="text-align:center">ProjectUsed</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quotationtbody" style="font-size:16px"></tbody>
+                        </table>
+                        <div style="height:40px; background-color:#D3F0F8">
+                            <div class="sliderback" align="left">
+                                <input id="ex9" type="text" />
+                                <a href="#" id="pdfDownload" class="btn btn-danger" style="margin-top:-3px;"><span class="glyphicon glyphicon-file" id="pdfDownloadgl"></span> PDF</a>
+                            </div>
+                            <label class="costlabel" style="font-size:20px">Cost:</label>
+                            <label class="pricelabel" id="pricelabel" style="font-size:20px;color:red">0NT</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MemberModal -->
+    <div id="LoginModal" class="modal fade " style="display:none;" role="dialog">
+        <div class="container modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:cornflowerblue;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Login form</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            @*<label for="emailInput">Email</label>*@
+                            <div class="input-group pb-modalreglog-input-group" style="margin-top: 10px;">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                <input class="form-control" id="emailInput" name="emailInput" placeholder="Email">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @*<label for="password">Password</label>*@
+                            <div class="input-group pb-modalreglog-input-group" style="margin-top: 30px;">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                <input type="password" class="form-control" id="loginPwd" name="loginPwd" placeholder="Password">
+                            </div>
+                            <label id="wrongLogIn" class="hidden" style="margin-top:15px ; margin-bottom:0; color:red">Wrong Email or Password</label>
+                        </div>
+                        <div class="text-center">
+                            <span class="txt1">
+                                Create an account?
+                            </span>
+                            <a href="#" class="txt2 hov1" id="signUpLink">
+                                Sign up
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnLogIn">Log in</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="SignUpModal" class="modal fade " style="display:none;" role="dialog">
+        <div class="container modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:cornflowerblue;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">Registration form</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="pb-modalreglog-form-reg">
+                        <div class="form-group" >
+                            @*<label for="email">Email address</label>*@
+                            <div class="input-group pb-modalreglog-input-group" style="float: left;margin-bottom:30px">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                <input type="email" class="form-control" id="inputEmail" placeholder="Email" style="width:310px">
+                                <span id="emailCheck" class="glyphicon glyphicon-remove-circle redRemove hidden" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @*<label for="password">Password</label>*@
+                            <div class="input-group pb-modalreglog-input-group" style="margin-bottom:30px">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                <input type="password" class="form-control" id="inputPws" placeholder="Password" style="width:310px;">
+                                <span id="passwordCheck" class="glyphicon glyphicon-remove-circle redRemove hidden" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @*<label for="confirmpassword">Confirm password</label>*@
+                            <div class="input-group pb-modalreglog-input-group">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                <input type="password" class="form-control" id="inputConfirmPws" placeholder="Confirm Password" style="width:310px">
+                                <span id="ConfirmPwsCheck" class="glyphicon glyphicon-remove-circle redRemove hidden" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" id="ch" name="chs">
+                            I agree with <a href="#">terms and conditions.</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnSignUp">Sign up</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div id="SavingModal" class="modal fade " style="display:none;" role="dialog" data-backdrop="static" data-keyboard="false">
+            <div class="container modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body" style="margin-left:0px;">
+                        <div id="myProgress" style="margin-left:0px;background:rgba(30%,0%,0%,0)">
+                            <div id="myBar">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <script>
+        var mesh, intersects, raycaster, JsonList
+        var group, imgData, imgNode, GridHelper, screenShot, addItemList;
+        var camera, scene, renderer, transformControls, selected;
+        var objects = [], control = [], allMaterial = [], selectMaterial = [];
+        var rightEmail = false, rightPwd = false, rightConfirmPwd = false, rightTerms = false
+
+        init();
+        render();
+        animate();
+
+        //初始化方法
+        function init() {
+            //新增場景
+            scene = new THREE.Scene();
+            GridHelper = new THREE.GridHelper(400, 20)
+            scene.add(GridHelper);
+
+            //新增相機
+            camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 8000);
+            camera.position.set(200, 150, 200);
+            camera.lookAt(new THREE.Vector3(0, 200, 0));
+
+            //新增燈光
+            var viewPos = camera.position;
+            var light = new THREE.DirectionalLight(0xDDDDDD, 1.7);
+            light.position.set(viewPos.x, viewPos.y, viewPos.z);
+            scene.add(light);
+
+            //新增雷射
+            raycaster = new THREE.Raycaster();
+            renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = false;
+            document.body.appendChild(renderer.domElement);
+
+            //新增座標控制器
+            control = new THREE.TransformControls(camera, renderer.domElement);
+            control.size = 0.6
+            control.setTranslationSnap(5);
+            control.setRotationSnap(THREE.Math.degToRad(15));
+            var loader = new THREE.JSONLoader();
+
+            //新增相機拖曳控制器
+            trackballControls = new THREE.TrackballControls(camera);
+            trackballControls.maxDistance = 1000;
+            trackballControls.minDistance = 50;
+            trackballControls.addEventListener('change', render);
+
+            //新增價錢拉桿
+            var mySlider = $("#ex9").bootstrapSlider({ min: 0, max: 5, step: 0.1, value: 0 });
+
+            //New Window
+            $('#newModal').on('shown.bs.modal', function () {
+                $(document).off('focusin.modal');
+                document.removeEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = false;
+                $('#newnameInput').click(function () {
+                    $('#newnameInput').focus();
+                })
+            });
+            $('#modalNewBtn').click(function () {
+                $('#nameInput').val($('#newnameInput').val())
+                $.ajax({
+                    type: "post",
+                    url: "/odata/SaveTables",
+                    data: {
+                        "ProjectName": $('#newnameInput').val(),
+                    }
+                })
+                $.ajax({
+                    type: "post", url: "/Home/Index", ContentType: "application/x-www-form-urlencoded", data: { "newnameInput": $('#newnameInput').val() }
+                })
+            })
+            $('#newModal').on('hidden.bs.modal', function () {
+                document.addEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = true;
+            })
+
+            //Save Window
+            var LZMAcompressValue = 1
+            $('#saveModal').on('shown.bs.modal', function () {
+                $(document).off('focusin.modal');
+                document.removeEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = false;
+                $('#nameInput').click(function () {
+                    $('#nameInput').focus();
+                })
+                $('#descriptionInput').click(function () {
+                    $('#descriptionInput').focus();
+                })
+            });
+            var savePercent = 0
+            $('#modalSaveBtn').click(function () {
+                //$('#SavingModal').modal("show")
+                //LZMA.compress(JSON.stringify(allMaterial), LZMAcompressValue, function on_compress_complete(result) {
+                //    //alert("Compressed: " + result.length);
+                //    compressResult = result
+                //console.log(compressResult)
+                var nowMemberID
+                $.get("/odata/MemberTables?$filter=MemberEmail eq %27" + "@Session["userID"]" + "%27", function (e) {
+                    nowMemberID = e.value[0].MemberID
+                })
+
+                var getNowProjectId
+                $.get("/odata/SaveTables?$filter=ProjectName eq " + "%27" + $('#nameInput').val() + "%27", function (e) {
+                    try {
+                        if (e.value[0].ProjectID != null) {
+                            getNowProjectId = e.value[0].ProjectID;
+                        }
+                    }
+                    catch (e) {
+                        return e;
+                    }
+                }).then(function () {
+
+                    if (getNowProjectId != null) {
+                        $.ajax({
+                            type: "PATCH",
+                            url: "/odata/SaveTables" + "(" + getNowProjectId + ")",
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                "ProjectName": $('#nameInput').val(),
+                                "MemberName": "Guest",
+                                "MemberID": nowMemberID, @*"@Session["userID"].ToString().Substring(0, @Session["userID"].ToString().IndexOf('@'))"*@
+                                "Description": $('#descriptionInput').val(),
+                                "ProjectContent": JSON.stringify(allMaterial),
+                                //"ProjectContent": JSON.stringify(compressResult),
+                                "ScreenShot": $("#screenShot").html()
+                            })
+                        })
+                    }
+                    else {
+                        $.ajax({
+                            type: "post",
+                            url: "/odata/SaveTables",
+                            data: {
+                                "ProjectName": $('#nameInput').val(),
+                                "MemberName": "@Session["userID"]",
+                                "MemberID": nowMemberID,
+                                "Description": $('#descriptionInput').val(),
+                                "ProjectContent": JSON.stringify(allMaterial),
+                                "ScreenShot": $("#screenShot").html()
+                            }
+                        })
+                    }
+                })
+                //}, function on_compress_progress_update(percent) {
+                //    /// Compressing progress code goes here.
+                //    savePercent = percent
+                //    document.title = (percent * 100);
+
+                //})
+            })
+            $('#saveModal').on('hidden.bs.modal', function () {
+                document.addEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = true;
+            })
+
+            //Quotation Window
+            $('#quotationModal').on('shown.bs.modal', function () {
+                var selectProjectName
+                $(document).off('focusin.modal');
+                document.removeEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = false;
+                $("#selectquotation").chosen();
+                $.ajax({
+                    url: "/odata/SaveTables",
+                    success: function (data) {
+                        $("#selectquotation").html("")
+                        data.value.forEach(function (element) {
+
+                            var add = "<option value=" + element.ProjectID + ">" + element.ProjectName + "</option>"
+                            $("#selectquotation").append(add);
+                            $("#selectquotation").val(0)
+                        })
+
+                    },
+                });
+                $('#selectquotation').on('chosen:showing_dropdown', function () {
+                    $("#selectquotation").trigger("chosen:updated");
+
+                });
+
+                $('#selectquotation').on('change', function (e) {
+                    console.log($('#selectquotation option:selected').val())
+                    $.get("/odata/ProjectUsedTables?$filter=ProjectID eq " + $('#selectquotation option:selected').val() + "&$orderby=Type", function (e) {
+                        $("#quotationtbody").html("")
+                    }).then(function (e) {
+                        var allcost = []
+
+                        e.value.forEach(function (element) {
+                            console.log(element)
+                            var add =
+                                "<tr>" +
+                                "<td>" + element.ProjectName + "</td>" +
+                                "<td>" + element.LegoID + "</td>" +
+                                "<td>" + element.Name + "</td>" +
+                                "<td>" + element.Weight + "</td>" +
+                                "<td>" + element.Type + "</td>" +
+                                "<td>" + element.ProjectUsed + "</td>" +
+                                "</tr>"
+                            $("#quotationtbody").append(add);
+
+                            allcost.push(parseFloat(element.Weight) * element.ProjectUsed)
+                            $("#pricelabel").html("0NT")
+
+                        })
+
+                        // For non-getter methods, you can chain together commands
+                        mySlider.bootstrapSlider('setValue', 0)
+
+                        mySlider.on('slide', function (slideElement) {
+                            var sum = 0;
+                            value = mySlider.bootstrapSlider('getValue');
+                            allcost.forEach(function (item) {
+                                sum += item * value;
+                            })
+                            console.log(sum)
+                            $("#pricelabel").html(parseInt(sum) + "NT")
+                        })
+                    })
+
+                });
+            });
+            $('#quotationModal').on('hidden.bs.modal', function () {
+                document.addEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = true;
+            })
+
+            //Login Window
+            $('#LoginModal').on('shown.bs.modal', function () {
+                document.removeEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = false;
+            });
+            $('#btnLogIn').click(function () {
+
+                $.ajax({
+                    type: "get",
+                    url: "/odata/MemberTables?$filter=MemberEmail eq %27" + $("#emailInput").val() + "%27 and MemberPassword eq %27" + $("#loginPwd ").val() + "%27"
+                }).then(function (data) {
+                    console.log(data.value == "")
+                    if (data.value == "") {
+                        $("#wrongLogIn").removeClass('hidden')
+                    }
+                    else {
+                        $.post("@Url.Action("Member","Home")", { "emailInput": $("#emailInput").val(), "loginPwd": $("#loginPwd ").val() });
+                        window.location = "@Url.Action("Index", "Home")"
+
+                    }
+                })
+
+            })
+            $('#LoginModal').on('hidden.bs.modal', function () {
+                document.addEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = true;
+            })
+
+            //SignUp Window
+            $('#SignUpModal').on('shown.bs.modal', function () {
+                document.removeEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = false;
+            });
+            $('#btnSignUp').click(function () {
+                if (rightEmail & rightPwd & rightConfirmPwd & rightTerms) {
+                    $.ajax({
+                        type: "post",
+                        url: "/odata/MemberTables",
+                        data: {
+                            "MemberName": $("#inputEmail").val().substring(0, $("#inputEmail").val().indexOf('@@')),
+                            "MemberEmail": $("#inputEmail").val(),
+                            "MemberPassword": $('#inputPws').val(),
+                        }
+                    }).then(function () {
+                        window.location = "@Url.Action("Index", "Home")"
+                    })
+                }
+
+            })
+            $('#SignUpModal').on('hidden.bs.modal', function () {
+                document.addEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = true;
+            })
+
+            $('#btnLogOut').click(function () {
+                $.post("@Url.Action("LogOut", "Home")")
+                window.location = "@Url.Action("Index", "Home")"
+            })
+
+            $(function () {
+                $('#inputEmail').change(function () {
+                    $.ajax({
+                        url: '/odata/MemberTables?$filter=MemberEmail%20eq%20%27' + $('#inputEmail').val() + '%27',
+                        type: 'GET',
+                        success: function (data) {
+                            console.log(data)
+                            $("#emailCheck").removeClass('hidden');
+                            if (data.value == "" & $('#inputEmail').val().length > 15 & $("#inputEmail").val().indexOf('@@') > 0) {
+                                rightEmail = true;
+                                $("#emailCheck").removeClass('hidden');
+                                $("#emailCheck").removeClass('redRemove').addClass('greenOK');
+                                $("#emailCheck").removeClass('glyphicon-remove-circle').addClass('glyphicon-ok-circle');
+                            }
+                            else {
+                                rightEmail = false
+                                $("#emailCheck").removeClass('greenOK').addClass('redRemove');
+                                $("#emailCheck").removeClass('glyphicon-ok-circle').addClass('glyphicon-remove-circle');
+                            }
+                        },
+
+                    });
+                });
+
+                $('#inputPws').change(function () {
+                    $("#passwordCheck").removeClass('hidden');
+                    if ($('#inputPws').val().length > 9) {
+                        rightPwd = true
+                        $("#passwordCheck").removeClass('hidden');
+                        $("#passwordCheck").removeClass('redRemove').addClass('greenOK');
+                        $("#passwordCheck").removeClass('glyphicon-remove-circle').addClass('glyphicon-ok-circle');
+                    }
+                    else {
+                        rightPwd = false
+                        $("#passwordCheck").removeClass('greenOK').addClass('redRemove');
+                        $("#passwordCheck").removeClass('glyphicon-ok-circle').addClass('glyphicon-remove-circle');
+                    }
+                });
+
+                $('#inputConfirmPws').change(function () {
+                    $("#ConfirmPwsCheck").removeClass('hidden');
+                    console.log($('#inputConfirmPws').val())
+                    console.log($('#inputPws').val())
+                    if ($('#inputConfirmPws').val() == $('#inputPws').val() & $('#inputPws').val().length > 9) {
+                        rightConfirmPwd = true
+                        $("#ConfirmPwsCheck").removeClass('hidden');
+                        $("#ConfirmPwsCheck").removeClass('redRemove').addClass('greenOK');
+                        $("#ConfirmPwsCheck").removeClass('glyphicon-remove-circle').addClass('glyphicon-ok-circle');
+                    }
+                    else {
+                        rightConfirmPwd = false
+                        $("#ConfirmPwsCheck").removeClass('greenOK').addClass('redRemove');
+                        $("#ConfirmPwsCheck").removeClass('glyphicon-ok-circle').addClass('glyphicon-remove-circle');
+                    }
+                });
+
+                $('#ch').change(function () {
+                    if ($('#ch').checked = true) {
+                        rightTerms = true
+                    }
+                    else {
+                        rightTerms = false
+                    }
+                });
+            })
+
+            $('#LoadModal').on('show.bs.modal', function () {
+                document.removeEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = false;
+                $("#load2").html("")
+                $.get("/odata/SaveTables", function (e) {
+                }).then(function (element) {
+                    element.value.forEach(function (element) {
+                        $("#load2").append(element.ScreenShot)
+                        $("#load2>img").attr("class", "Library")
+                        $("#load2>img").attr("height", 140)
+                        $("#load2>img").attr("width", 154)
+                    })
+                })
+            });
+            $('#LoadModal').on('hide.bs.modal', function () {
+                $('#LoadInfoModal').modal("hide")
+                document.addEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = true;
+            });
+
+            $('#LoadInfoModal').on('show.bs.modal', function () {
+                document.removeEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = false;
+
+            });
+            $('#LoadInfoModal').on('hide.bs.modal', function () {
+                document.addEventListener("mousedown", mouseOnClick);
+                trackballControls.enabled = true;
+            });
+
+            var nowEventTargetId
+            $("#load2").click(function (event) {
+
+                nowEventTargetId = event.target.id
+                console.log(event.target)
+                console.log(nowEventTargetId)
+                var pcspzs = 0
+                $.get("/odata/ProjectUsedTables?$filter=ProjectName eq %27" + nowEventTargetId + "%27", function (e) {
+                    console.log(e.value)
+                    e.value.forEach(function (element) {
+                        console.log(element.ProjectUsed)
+                        pcspzs += element.ProjectUsed
+                    })
+                }).then(function () {
+                    $.get("/odata/SaveTables?$filter=ProjectName eq %27" + nowEventTargetId + "%27", function (e) {
+                        console.log(pcspzs)
+                        $("#ProjectNameLib").html(e.value[0].ProjectName)
+                        $("#MemberNameLib").html(e.value[0].MemberName)
+                        $("#DescriptionLib").html(e.value[0].Description)
+                        $("#pcspzsLib").html(pcspzs)
+                        $("#SaveTimeLib").html(e.value[0].ProjectSaveTime.substring(0, 10))
+                    })
+                    $('#LoadInfoModal').modal("show")
+
+                })
+
+            })
+
+            $('#modalLibraryBtn').click(function (element) {
+                var material = new THREE.MeshLambertMaterial();
+                var loader = new THREE.JSONLoader();
+                console.log($("#ProjectNameLib").html())
+
+                $.get("/odata/SaveTables?$filter=ProjectName eq " + "%27" + $("#ProjectNameLib").html() + "%27", function (e) {
+                    console.log(e.value[0].ProjectID)
+                }).then(function (element) {
+
+                    console.log(111)
+                    $.get("/odata/SaveTables?$filter=ProjectID eq " + element.value[0].ProjectID, function (e) {
+                        console.log(e.value[0].ProjectName)
+                        $('#nameInput').val(e.value[0].ProjectName)
+                        $.ajax({ type: "post", url: "@Url.Action("Index", "Home")", ContentType: "application/x-www-form-urlencoded", data: { "newnameInput": e.value[0].ProjectName } })
+
+                        //ProjectContent = JSON.parse(e.value[0].ProjectContent)
+
+                        JsonList = JSON.parse(e.value[0].ProjectContent); //  JSON.parse(e);
+                    }).then(function () {
+                        //LZMA.decompress(ProjectContent, function on_decompress_complete(result) {
+                        //    //alert("Decompressed: " + result.length);
+                        //    JsonList = JSON.parse(result);
+
+                        JsonList.forEach(function (element) {
+
+                            console.log(element)
+                            var material = new THREE.MeshLambertMaterial();
+                            var materialColor = element.materials[0].color.toString(16)
+                            var model = loader.parse(element.geometries[0].data);
+                            material.color.setHex("0x" + materialColor)
+                            var mesh = new THREE.Mesh(model.geometry, material);
+                            var m = new THREE.Matrix4();
+
+                            m.elements = element.object.matrix
+                            var translation = new THREE.Vector3(),
+                                rotation = new THREE.Quaternion(),
+                                scale = new THREE.Vector3();
+                            m.decompose(translation, rotation, scale);
+
+                            colorDictionary[mesh.uuid] = "0x" + materialColor;
+
+                            mesh.quaternion.set(rotation._x, rotation._y, rotation._z, rotation._w)
+                            mesh.position.set(translation.x, translation.y, translation.z)
+                            scene.add(mesh);
+                            objects.push(mesh);
+                            allMaterial.push(mesh);
+                            control.attach(mesh);
+                            render();
+                        })
+                        console.log(allMaterial);
+                        //}, function on_decompress_progress_update(percent) {
+                        //    /// Decompressing progress code goes here.
+
+                        //    document.title = (percent * 100);
+                        //})
+                    })
+                })
+            })
+
+            //$('#SavingModal').on('shown.bs.modal', function () {
+            //    document.removeEventListener("mousedown", mouseOnClick);
+            //    trackballControls.enabled = false;
+
+            //    var elem = document.getElementById("myBar");
+            //    var width = 0;
+            //    var id = setInterval(frame, 10);
+            //    function frame() {
+            //        if (width >= 100) {
+            //            clearInterval(id);
+            //            $('#SavingModal').modal('hide')
+            //        } else {
+            //            width++;
+            //            elem.style.width = document.title + '%';
+            //            elem.innerHTML = Math.round(document.title) + '%';
+            //        }
+            //    }
+
+            //});
+            //$('#SavingModal').on('hide.bs.modal', function () {
+            //    document.addEventListener("mousedown", mouseOnClick);
+            //    trackballControls.enabled = true;
+
+            //});
+
+            $('#color_value').click(function (element) {
+                $('#color_value').focus();
+            })
+            $('#dicePositionX').click(function (element) {
+                $('#dicePositionX').focus();
+            })
+
+            $('#dicePositionY').click(function (element) {
+                $('#dicePositionY').focus();
+            })
+
+            $('#dicePositionZ').click(function (element) {
+                $('#dicePositionZ').focus();
+            })
+
+            //監聽視窗大小改變
+            window.addEventListener('resize', function (event) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                render();
+            }, false);
+
+            //監聽鍵盤按鍵
+            window.addEventListener('keydown', function (event) {
+
+                switch (event.keyCode) {
+
+                    case 46: // Delete
+
+                        $.ajax({
+                            url: '/odata/ProjectUsedTables?$filter=ProjectID eq ' + getNowProjectId + " and LegoID eq " + currentTargetID,
+                            type: 'GET',
+                            success: function (data) {
+                                var newProjectUsed = data.value[0].ProjectUsed - 1
+                                $.ajax({
+                                    type: "PATCH",
+                                    url: "/odata/ProjectUsedTables(" + data.value[0].SerialNumber + ")",
+                                    contentType: 'application/json; charset=utf-8',
+                                    datatype: 'json',
+                                    data: JSON.stringify({
+                                        "ProjectUsed": newProjectUsed
+                                    })
+                                })
+
+                            }
+                        })
+
+                        selected.position.set(99999, 99999, 99999)
+                        var index = allMaterial.indexOf(selected);
+                        if (index > -1) {
+                            allMaterial.splice(index, 1);
+                        }
+                        scene.remove(selected)
+                        console.log(allMaterial)
+                        render()
+                        break;
+
+                    case 17: // Ctrl
+                        //var aa = JSON.stringify(allMaterial)
+                        //var string = "This is my compression test.";
+                        //alert("Size of sample is: " + aa.length);
+                        //var compressed = LZString.compress(aa);
+                        //alert("Size of compressed sample is: " + compressed.length);
+                        //var compression_mode = 1
+                        //console.log(currentTargetID)
+                        //console.log(getNowProjectId)
+
+                        //LZMA.compress(aa, compression_mode, function on_compress_complete(result) {
+                        //    alert("Compressed: " + result.length);
+
+                        //    /// Now, let's try to decompress it to make sure it works both ways.
+                        //    LZMA.decompress(result, function on_decompress_complete(result) {
+                        //        alert("Decompressed: " + result.length);
+                        //    }, function on_decompress_progress_update(percent) {
+                        //        /// Decompressing progress code goes here.
+                        //        document.title = "Decompressing: " + (percent * 100) + "%";
+                        //    });
+                        //}, function on_compress_progress_update(percent) {
+                        //    /// Compressing progress code goes here.
+                        //    document.title = "Compressing: " + (percent * 100) + "%";
+                        //});
+                        //selectMaterial.forEach(function (element) {
+                        //    console.log(element.parent.rotation._x)
+
+                        //})
+
+                        control.setTranslationSnap(0.25);
+                        break;
+
+                    case 27: // esc
+                        selectMaterial.forEach(function (element) {
+                            var x = element.parent.position.x + element.position.x
+                            var y = element.parent.position.y + element.position.y
+                            var z = element.parent.position.z + element.position.z
+                            element.position.set(x, y, z)
+
+                        })
+                        group.position.set(0, 0, 0)
+                        selectMaterial = []
+                        group.children.forEach(function (element) {
+                            element.material.color.setHex(colorDictionary[element.uuid]);
+                        })
+                        control.detach(group);
+                        group = new THREE.Object3D();
+                        render();
+                        break;
+
+                    case 87: // W
+                        control.setMode("translate");
+                        break;
+
+                    case 69: // E
+                        control.setMode("rotate");
+                        break;
+
+                    case 82: // R
+                        //control.setMode("scale");
+                        break;
+
+                    case 187:
+                    case 107: // +, =, num+
+                        control.setSize(control.size + 0.01);
+                        this.console.log(control.size)
+                        break;
+
+                    case 189:
+                    case 109: // -, _, num-
+                        control.setSize(Math.max(control.size - 0.01, 0.01));
+                        break;
+
+                }
+            });
+
+            window.addEventListener('keyup', function (event) {
+
+                switch (event.keyCode) {
+
+                    case 17: // Ctrl
+                        control.setTranslationSnap(5);
+                        break;
+
+                }
+
+            });
+
+            //監聽滑鼠移動
+            document.addEventListener("mousemove", function (event) {
+                light.position.set(viewPos.x, viewPos.y, viewPos.z);
+                intersects = raycaster.intersectObjects(objects);
+                event.preventDefault();
+                var mouse3D = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1,
+                    -(event.clientY / window.innerHeight) * 2 + 1,
+                    0.5);
+                raycaster.setFromCamera(mouse3D, camera);
+            });
+
+            //監聽滑鼠點擊
+            document.addEventListener('mousedown', mouseOnClick);
+        }
+
+        //渲染方法
+        function render() {
+            control.update();
+
+            //???????????????????
+            try {
+                $("#dicePositionX").val(parseFloat(selected.position.x))
+                $("#dicePositionY").val(parseFloat(selected.position.y))
+                $("#dicePositionZ").val(parseFloat(selected.position.z))
+            }
+            catch (e) { }
+            control.update();
+            renderer.render(scene, camera);
+        }
+
+        //相機動畫方法
+        function animate() {
+            requestAnimationFrame(animate);
+            trackballControls.update();
+
+        }
+
+        //網頁讀取完後執行
+        window.onload = function () {
+            //?????????????
+            //$(".addItem").trigger("click");
+            //#myTable > thead > tr > th:nth-child(1)
+
+
+            $("#pdfDownload").click(function () {
+                var pdfcolumns = [];
+                var pdfrows = [];
+                var inpdfrows = [];
+                var projectName = ""
+                var countIndex = 1
+                $("#myTable > thead > tr > th").each(function (index) {
+                    pdfcolumns.push($(this).text())
+                })
+                $("#quotationtbody > tr>td").each(function (index) {
+                    if (index == 0) {
+                        projectName = $(this).text()
+                        console.log(projectName)
+                    }
+                    inpdfrows.push($(this).text())
+                    if (countIndex % 6 == 0) {
+                        pdfrows.push(inpdfrows)
+                        inpdfrows = []
+                    }
+                    countIndex++
+                })
+
+                //// Only pt supported (not mm or in)
+                var doc = new jsPDF('p', 'pt');
+                doc.autoTable(pdfcolumns, pdfrows, {
+                    styles: { halign: 'center', valign: 'middle' },
+                    columnStyles: {
+
+                    },
+                    margin: { top: 40 },
+                });
+                doc.save(projectName + '.pdf');
+            })
+            render()
+            if ("@Session["userID"]" == "Guest") {
+                $('#LoginModal').modal("show")
+            }
+            group = new THREE.Object3D();
+            if ($('#newnameInput').val() == "") {
+                $('#nameInput').val("@Session["projectID"]")
+            }
+            else {
+                $('#nameInput').val($('#newnameInput').val())
+            }
+
+            $('#save').click(function (element) {
+                var groupChild = [];
+                screenShot = new Image();
+
+                saveAsImage();
+                screenShot.src = imgData
+                screenShot.height = 300;
+                screenShot.width = 370;
+                screenShot.id = $("#nameInput").val()
+
+                $("#screenShot").html(screenShot)
+
+                if (group.position.x != 0 | group.position.y != 0 | group.position.z != 0) {
+                    group.children.forEach(function (element) {
+                        //console.log(element)
+                        groupChild.push(element)
+                        //console.log(allMaterial.indexOf(element))
+                        var groupIndex = allMaterial.indexOf(element)
+                        //console.log(group.position.z + allMaterial[groupIndex].position.z)
+                        allMaterial[groupIndex].position.set(group.position.x + allMaterial[groupIndex].position.x, group.position.y + allMaterial[groupIndex].position.y, group.position.z + allMaterial[groupIndex].position.z)
+                    })
+                    group.position.set(0, 0, 0)
+                }
+
+            });
+
+            $('#signUpLink').click(function () {
+                $('#SignUpModal').modal("show")
+                $('#LoginModal').modal("hide")
+            })
+
+        }
+
+        //點擊新增物體
+        var colorDictionary = {};
+        var oldcolor = []
+        var getNowProjectId
+        var currentTargetID
+        $('.addItem').click(function (element) {
+            currentTargetID = element.currentTarget.id;
+            var loader = new THREE.JSONLoader();
+            console.log(currentTargetID)
+
+            $.get("/odata/LegoLibraries?$filter=LegoID eq " + element.currentTarget.id, function (e) {
+                JsonList = JSON.parse(e.value[0].Model); //  JSON.parse(e);
+                addItemList = e.value[0]
+            }).then(function () {
+                console.log(addItemList)
+                var model = loader.parse(JsonList);
+                var mesh = new THREE.Mesh(model.geometry, new THREE.MeshLambertMaterial());
+                scene.add(mesh);
+                objects.push(mesh);
+                allMaterial.push(mesh);
+                console.log(mesh)
+                mesh.material.color.setHex("0x" + color_value.value);
+                oldcolor.push("0x" + color_value.value)
+                colorDictionary[mesh.uuid] = "0x" + color_value.value;
+                console.log(colorDictionary);
+                console.log(1112222123)
+                render();
+
+                $.get("/odata/SaveTables?$filter=ProjectName eq " + "%27" + $('#nameInput').val() + "%27", function (e) {
+                    try {
+                        if (e.value[0].ProjectID != null) {
+                            getNowProjectId = e.value[0].ProjectID;
+                            console.log(e)
+                            console.log(123123)
+                        }
+                    }
+                    catch (e) { return e; }
+
+                }).then(function () {
+
+                    $.ajax({
+                        url: '/odata/ProjectUsedTables?$filter=ProjectID eq ' + getNowProjectId + " and LegoID eq " + currentTargetID,
+                        type: 'GET',
+                        success: function (data) {
+                            if (data.value == "") {
+                                $.ajax({
+                                    type: "post",
+                                    url: "/odata/ProjectUsedTables()",
+                                    ContentType: "application/json",
+                                    data: {
+                                        "ProjectID": getNowProjectId,
+                                        "ProjectName": $('#nameInput').val(),
+                                        "LegoID": addItemList.LegoID,
+                                        "Name": addItemList.Name,
+                                        "Weight": addItemList.Weight,
+                                        "Type": addItemList.Type,
+                                        "ProjectUsed": 1
+                                    }
+                                })
+                            }
+
+                            else {
+                                var newProjectUsed = data.value[0].ProjectUsed + 1
+                                $.ajax({
+                                    type: "PATCH",
+                                    url: "/odata/ProjectUsedTables(" + data.value[0].SerialNumber + ")",
+                                    contentType: 'application/json; charset=utf-8',
+                                    datatype: 'json',
+                                    data: JSON.stringify({
+                                        "ProjectUsed": newProjectUsed
+                                    })
+                                })
+                            }
+                        }
+                    })
+                })
+            })
+        });
+
+        //距離計算方法
+        function distanceVector(v1, v2) {
+            var dx = v1.x - v2.x;
+            var dy = v1.y - v2.y;
+            var dz = v1.z - v2.z;
+            return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        }
+
+        function mouseOnClick() {
+            $('input').each(function () {
+                $(this).trigger('blur');
+                //each input event one by one... will be blured
+            })
+
+
+            //$('#color_value').blur();
+            //$('#dicePositionX').blur();
+            //$('#dicePositionY').blur();
+            //$('#dicePositionZ').blur();
+
+            try {
+                if (parseFloat(control.position.z) < 0.001) {
+                    control.position.z = 0
+                }
+                control.position.set(parseFloat($("#dicePositionX").val()), parseFloat($("#dicePositionY").val()), parseFloat($("#dicePositionZ").val()))
+                selected.position.set(parseFloat($("#dicePositionX").val()), parseFloat($("#dicePositionY").val()), parseFloat($("#dicePositionZ").val()))
+                render()
+            }
+            catch (e) { }
+
+            if (intersects.length > 0) {
+
+                allMaterial.forEach(function (element) {
+                    element.material.color.setHex(colorDictionary[element.uuid]);
+                })
+
+                control.addEventListener('change', render);
+                control.attach(intersects[0].object);
+                scene.add(control);
+                selected = (intersects[0].object)
+                console.log('control');
+                intersects[0].object.material.color.setHex(0xffff00);
+                render()
+
+            }
+            else {
+                control.detach(mesh);
+                allMaterial.forEach(function (element) {
+                    element.material.color.setHex(colorDictionary[element.uuid]);
+                })
+                render()
+
+            }
+            if (window.event.shiftKey) {
+                var x = intersects[0].object.position.x
+                var y = intersects[0].object.position.y
+                var z = intersects[0].object.position.z
+                var gx = group.position.x
+                var gy = group.position.y
+                var gz = group.position.z
+                group.add(intersects[0].object)
+                if (selectMaterial.indexOf(intersects[0].object) == -1) {
+                    selectMaterial.push(intersects[0].object)
+                    intersects[0].object.position.set(-(group.position.x - intersects[0].object.position.x), -(group.position.y - intersects[0].object.position.y), -(group.position.z - intersects[0].object.position.z))
+
+                }
+                console.log(distanceVector(intersects[0].object.position, group.position))
+                scene.add(group);
+
+                console.log(intersects[0].object.position)
+                console.log(group.position)
+                console.log(1111111111)
+
+                control.attach(group);
+                scene.add(control);
+
+                group.updateMatrixWorld();
+
+                selectMaterial.forEach(function (element) {
+                    element.material.color.setHex(0xffff00);
+                })
+                console.log(selectMaterial)
+                render()
+            }
+
+        }
+        function saveAsImage() {
+            var strMime = "image/png";
+            scene.remove(GridHelper);
+            render();
+            imgData = renderer.domElement.toDataURL(strMime);
+            scene.add(GridHelper);
+            render();
+        }
+    </script>
+
+    <script>
+
+        $('#cp1').colorpicker();
+        $('#ColorModal').on('shown.bs.modal', function () {
+
+            $(document).off('focusin.modal');
+            document.removeEventListener("mousedown", mouseOnClick);
+            trackballControls.enabled = false;
+            $('#cp1').click(function () {
+                document.getElementById("cp1").focus();
+            })
+
+        })
+    </script>
+
+    <canvas id="canvas" width="933" height="974" style="width: 933px; height: 974px;"></canvas>
+    <script src="~/Scripts/jscolor.js"></script>
+    <script src="~/Scripts/jq.dice-menu.js"></script>
+
+    <script src="~/Scripts/chosen.jquery.js"></script>
+    <script src="~/Scripts/PanelTables.js"></script>
+</body>
+</html>

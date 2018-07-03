@@ -1,0 +1,27 @@
+﻿            //console.log(typeof intersects[0].object)
+            //if (typeof (intersects[0].object) === undefined) {
+            //    alert(123)
+            //}
+            //intersects[0].object.material.color.setHex(0xffff00);
+
+            //allMaterial.forEach(function (element) {
+            //    console.log(element.material.color);
+            //    console.log("failsadasdas");
+            //    try {
+            //        console.log(element == intersects[0].object)
+            //        if (element == intersects[0].object) {
+            //            intersects[0].object.material.color.setHex(0xffff00);
+            //            console.log(1111)
+            //            console.log("ok");
+            //            render()
+            //        }
+            //        else {
+            //            element.material.color.setHex(0xffffff);
+            //            //console.log("fail");
+            //        }
+            //    }
+            //    catch (err) {
+            //        //element.material.color.setHex("0x" + color_value.value);
+            //    }
+            //    render()
+            //});

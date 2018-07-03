@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SmProjectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="SmProjectEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="LegoLibraries" EntityType="SmProjectModel.LegoLibrary" />
+    <EntitySet Name="ProjectUsedTables" EntityType="SmProjectModel.ProjectUsedTable" />
+    <AssociationSet Name="FK_ProjectUsedTable_LegoLibrary" Association="SmProjectModel.FK_ProjectUsedTable_LegoLibrary">
+      <End Role="LegoLibrary" EntitySet="LegoLibraries" />
+      <End Role="ProjectUsedTable" EntitySet="ProjectUsedTables" />
+    </AssociationSet>
+    <EntitySet Name="MemberTables" EntityType="SmProjectModel.MemberTable" />
+    <EntitySet Name="SaveTables" EntityType="SmProjectModel.SaveTable" />
+    <AssociationSet Name="FK_SaveTable_MemberTable" Association="SmProjectModel.FK_SaveTable_MemberTable">
+      <End Role="MemberTable" EntitySet="MemberTables" />
+      <End Role="SaveTable" EntitySet="SaveTables" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProjectUsedTable_SaveTable" Association="SmProjectModel.FK_ProjectUsedTable_SaveTable">
+      <End Role="SaveTable" EntitySet="SaveTables" />
+      <End Role="ProjectUsedTable" EntitySet="ProjectUsedTables" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="LegoLibrary">
+    <Key>
+      <PropertyRef Name="LegoID" />
+    </Key>
+    <Property Name="LegoID" Type="Int32" Nullable="false" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Weight" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="Model" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Type" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="ProjectUsedTables" Relationship="SmProjectModel.FK_ProjectUsedTable_LegoLibrary" FromRole="LegoLibrary" ToRole="ProjectUsedTable" />
+  </EntityType>
+  <EntityType Name="ProjectUsedTable">
+    <Key>
+      <PropertyRef Name="SerialNumber" />
+    </Key>
+    <Property Name="SerialNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProjectID" Type="Int32" />
+    <Property Name="ProjectName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="LegoID" Type="Int32" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Weight" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="Type" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="ProjectUsed" Type="Int32" />
+    <NavigationProperty Name="LegoLibrary" Relationship="SmProjectModel.FK_ProjectUsedTable_LegoLibrary" FromRole="ProjectUsedTable" ToRole="LegoLibrary" />
+    <NavigationProperty Name="SaveTable" Relationship="SmProjectModel.FK_ProjectUsedTable_SaveTable" FromRole="ProjectUsedTable" ToRole="SaveTable" />
+  </EntityType>
+  <Association Name="FK_ProjectUsedTable_LegoLibrary">
+    <End Type="SmProjectModel.LegoLibrary" Role="LegoLibrary" Multiplicity="0..1" />
+    <End Type="SmProjectModel.ProjectUsedTable" Role="ProjectUsedTable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LegoLibrary">
+        <PropertyRef Name="LegoID" />
+      </Principal>
+      <Dependent Role="ProjectUsedTable">
+        <PropertyRef Name="LegoID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="MemberTable">
+    <Key>
+      <PropertyRef Name="MemberID" />
+    </Key>
+    <Property Name="MemberID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MemberName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="MemberEmail" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="MemberPassword" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="SaveTables" Relationship="SmProjectModel.FK_SaveTable_MemberTable" FromRole="MemberTable" ToRole="SaveTable" />
+  </EntityType>
+  <EntityType Name="SaveTable">
+    <Key>
+      <PropertyRef Name="ProjectID" />
+    </Key>
+    <Property Name="ProjectID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProjectName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="ProjectContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="MemberID" Type="Int32" />
+    <Property Name="MemberName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="Description" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="ScreenShot" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ProjectSaveTime" Type="DateTime" Nullable="false" Precision="3" annotation:StoreGeneratedPattern="Computed" />
+    <NavigationProperty Name="MemberTable" Relationship="SmProjectModel.FK_SaveTable_MemberTable" FromRole="SaveTable" ToRole="MemberTable" />
+    <NavigationProperty Name="ProjectUsedTables" Relationship="SmProjectModel.FK_ProjectUsedTable_SaveTable" FromRole="SaveTable" ToRole="ProjectUsedTable" />
+  </EntityType>
+  <Association Name="FK_SaveTable_MemberTable">
+    <End Type="SmProjectModel.MemberTable" Role="MemberTable" Multiplicity="0..1" />
+    <End Type="SmProjectModel.SaveTable" Role="SaveTable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="MemberTable">
+        <PropertyRef Name="MemberID" />
+      </Principal>
+      <Dependent Role="SaveTable">
+        <PropertyRef Name="MemberID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProjectUsedTable_SaveTable">
+    <End Type="SmProjectModel.SaveTable" Role="SaveTable" Multiplicity="0..1" />
+    <End Type="SmProjectModel.ProjectUsedTable" Role="ProjectUsedTable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SaveTable">
+        <PropertyRef Name="ProjectID" />
+      </Principal>
+      <Dependent Role="ProjectUsedTable">
+        <PropertyRef Name="ProjectID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

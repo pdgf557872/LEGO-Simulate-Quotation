@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="SmProjectModelStoreContainer" CdmEntityContainer="SmProjectEntities">
+    <EntitySetMapping Name="LegoLibraries">
+      <EntityTypeMapping TypeName="SmProjectModel.LegoLibrary">
+        <MappingFragment StoreEntitySet="LegoLibrary">
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="Model" ColumnName="Model" />
+          <ScalarProperty Name="Weight" ColumnName="Weight" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="LegoID" ColumnName="LegoID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProjectUsedTables">
+      <EntityTypeMapping TypeName="SmProjectModel.ProjectUsedTable">
+        <MappingFragment StoreEntitySet="ProjectUsedTable">
+          <ScalarProperty Name="ProjectUsed" ColumnName="ProjectUsed" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="Weight" ColumnName="Weight" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="LegoID" ColumnName="LegoID" />
+          <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+          <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+          <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="MemberTables">
+      <EntityTypeMapping TypeName="SmProjectModel.MemberTable">
+        <MappingFragment StoreEntitySet="MemberTable">
+          <ScalarProperty Name="MemberPassword" ColumnName="MemberPassword" />
+          <ScalarProperty Name="MemberEmail" ColumnName="MemberEmail" />
+          <ScalarProperty Name="MemberName" ColumnName="MemberName" />
+          <ScalarProperty Name="MemberID" ColumnName="MemberID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SaveTables">
+      <EntityTypeMapping TypeName="SmProjectModel.SaveTable">
+        <MappingFragment StoreEntitySet="SaveTable">
+          <ScalarProperty Name="ProjectSaveTime" ColumnName="ProjectSaveTime" />
+          <ScalarProperty Name="ScreenShot" ColumnName="ScreenShot" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="MemberName" ColumnName="MemberName" />
+          <ScalarProperty Name="MemberID" ColumnName="MemberID" />
+          <ScalarProperty Name="ProjectContent" ColumnName="ProjectContent" />
+          <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+          <ScalarProperty Name="ProjectID" ColumnName="ProjectID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

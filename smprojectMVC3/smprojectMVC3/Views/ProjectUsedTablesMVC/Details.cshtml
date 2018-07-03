@@ -1,0 +1,73 @@
+﻿@model smprojectMVC3.Models.ProjectUsedTable
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>ProjectUsedTable</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProjectName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Weight)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Weight)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectUsed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProjectUsed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LegoLibrary.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LegoLibrary.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SaveTable.ProjectName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SaveTable.ProjectName)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.SerialNumber }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

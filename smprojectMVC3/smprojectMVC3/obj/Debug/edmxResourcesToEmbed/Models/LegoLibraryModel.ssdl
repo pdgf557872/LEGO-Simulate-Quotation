@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SmProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="LegoLibrary">
+    <Key>
+      <PropertyRef Name="LegoID" />
+    </Key>
+    <Property Name="LegoID" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" MaxLength="50" />
+    <Property Name="Weight" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="Model" Type="nvarchar(max)" />
+    <Property Name="Type" Type="nvarchar" MaxLength="30" />
+  </EntityType>
+  <EntityType Name="MemberTable">
+    <Key>
+      <PropertyRef Name="MemberID" />
+    </Key>
+    <Property Name="MemberID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="MemberName" Type="nvarchar" MaxLength="30" Nullable="false" />
+    <Property Name="MemberEmail" Type="nvarchar" MaxLength="30" />
+    <Property Name="MemberPassword" Type="nvarchar" MaxLength="30" />
+  </EntityType>
+  <EntityType Name="ProjectUsedTable">
+    <Key>
+      <PropertyRef Name="SerialNumber" />
+    </Key>
+    <Property Name="SerialNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ProjectID" Type="int" />
+    <Property Name="ProjectName" Type="nvarchar" MaxLength="20" />
+    <Property Name="LegoID" Type="int" />
+    <Property Name="Name" Type="nvarchar" MaxLength="50" />
+    <Property Name="Weight" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="Type" Type="nvarchar" MaxLength="30" />
+    <Property Name="ProjectUsed" Type="int" />
+  </EntityType>
+  <EntityType Name="SaveTable">
+    <Key>
+      <PropertyRef Name="ProjectID" />
+    </Key>
+    <Property Name="ProjectID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ProjectName" Type="nvarchar" MaxLength="20" />
+    <Property Name="ProjectContent" Type="nvarchar(max)" />
+    <Property Name="MemberID" Type="int" />
+    <Property Name="MemberName" Type="nvarchar" MaxLength="30" />
+    <Property Name="Description" Type="nvarchar" MaxLength="20" />
+    <Property Name="ScreenShot" Type="nvarchar(max)" />
+    <Property Name="ProjectSaveTime" Type="datetime" Nullable="false" StoreGeneratedPattern="Computed" />
+  </EntityType>
+  <Association Name="FK_ProjectUsedTable_LegoLibrary">
+    <End Role="LegoLibrary" Type="Self.LegoLibrary" Multiplicity="0..1" />
+    <End Role="ProjectUsedTable" Type="Self.ProjectUsedTable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="LegoLibrary">
+        <PropertyRef Name="LegoID" />
+      </Principal>
+      <Dependent Role="ProjectUsedTable">
+        <PropertyRef Name="LegoID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProjectUsedTable_SaveTable">
+    <End Role="SaveTable" Type="Self.SaveTable" Multiplicity="0..1" />
+    <End Role="ProjectUsedTable" Type="Self.ProjectUsedTable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SaveTable">
+        <PropertyRef Name="ProjectID" />
+      </Principal>
+      <Dependent Role="ProjectUsedTable">
+        <PropertyRef Name="ProjectID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_SaveTable_MemberTable">
+    <End Role="MemberTable" Type="Self.MemberTable" Multiplicity="0..1" />
+    <End Role="SaveTable" Type="Self.SaveTable" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="MemberTable">
+        <PropertyRef Name="MemberID" />
+      </Principal>
+      <Dependent Role="SaveTable">
+        <PropertyRef Name="MemberID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="SmProjectModelStoreContainer">
+    <EntitySet Name="LegoLibrary" EntityType="Self.LegoLibrary" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="MemberTable" EntityType="Self.MemberTable" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ProjectUsedTable" EntityType="Self.ProjectUsedTable" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SaveTable" EntityType="Self.SaveTable" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_ProjectUsedTable_LegoLibrary" Association="Self.FK_ProjectUsedTable_LegoLibrary">
+      <End Role="LegoLibrary" EntitySet="LegoLibrary" />
+      <End Role="ProjectUsedTable" EntitySet="ProjectUsedTable" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProjectUsedTable_SaveTable" Association="Self.FK_ProjectUsedTable_SaveTable">
+      <End Role="SaveTable" EntitySet="SaveTable" />
+      <End Role="ProjectUsedTable" EntitySet="ProjectUsedTable" />
+    </AssociationSet>
+    <AssociationSet Name="FK_SaveTable_MemberTable" Association="Self.FK_SaveTable_MemberTable">
+      <End Role="MemberTable" EntitySet="MemberTable" />
+      <End Role="SaveTable" EntitySet="SaveTable" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
